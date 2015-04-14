@@ -14,15 +14,16 @@ async:false
 ### 插件默认参数
 单位：px<br />
 
-			containerWidth: 960,            //容器宽度<br />
-			columnWidth: 280,               //每栏的宽度<br />
-			gap: 30,                        //方格间间隙<br />
-			loadMore: function() {}         //加载更多的函数<br />
+			containerWidth: 960,            //容器宽度
+			columnWidth: 280,               //每栏的宽度
+			gap: 30,                        //方格间间隙
+			loadMore: function() {}         //加载更多的函数
 
-
-
-
-
+<br />
+<br />
+<br />
+<br />
+<br />
 
 > C2CCC<br />
 > 2015-04-14
