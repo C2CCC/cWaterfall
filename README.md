@@ -22,8 +22,6 @@ async:false
 <br />
 <br />
 <br />
-<br />
-<br />
 
 > C2CCC<br />
 > 2015-04-14
