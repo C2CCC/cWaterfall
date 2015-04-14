@@ -11,12 +11,12 @@
 		var cW = $(this);
 		//为容器和方格添加样式
 		cW.css({
-			'width': opts.containerWidth + 'px',
+			'width': opts.containerWidth,
 			'position': 'relative',
 		});
 		cW.children().css({
-			'width': opts.columnWidth + 'px',
-			'margin': opts.gap + 'px' + ' 0 0 ' + opts.gap + 'px',
+			'width': opts.columnWidth,
+			'margin': opts.gap + ' 0 0 ' + opts.gap,
 			'position': 'absolute'
 		});
 		//定义列、列高、方格数组
@@ -30,12 +30,23 @@
 			columnHeights[i] = 0;
 		}
 		var elems = [];
-		elemNum = -1;
+		elemNum = 0;
 		cW.children().each(function() {
 			elems.push($(this));
 			elemNum++;
 			$(this).css('opacity', '0');
 		});
+		//添加底部提示元素
+		var bottomTip = $("<span></span>").addClass('cBottomTip').html("下滑加载更多").css({
+			'position': 'absolute',
+			'bottom': '0',
+			'width': opts.containerWidth,
+			'height': '50px',
+			'font-size': '14px',
+			'text-align': 'center'
+		});
+		cW.prepend(bottomTip);
+		//执行排序，延时以修复chrome无法测量实际高度的问题
 		setTimeout(function() {
 			calLayout(elems);
 		}, 500);
@@ -60,13 +71,13 @@
 			var i = 0;
 			var anime = {
 				opacity: '1',
-				marginTop: '+=' + opts.gap + 'px'
+				marginTop: '+=' + opts.gap
 			}
 			orderAnimate(e, anime, 300, i);
 			//最后定义容器高度
 			var c = findMax(columnHeights[0], columnHeights[1], columnHeights[2]);
 			cW.css({
-				'height': c + opts.gap + 'px'
+				'height': c + opts.gap + 50
 			});
 		}
 
@@ -115,7 +126,9 @@
 			var windowHeight = $(window).height();
 			var documentHeight = $(document).height();
 			if (documentTop >= (documentHeight - windowHeight)) {
+				$('.cBottomTip').html("加载中...");
 				opts.loadMore();
+				$('.cBottomTip').html("下滑加载更多");
 				loadMoreLayout();
 			}
 		});
