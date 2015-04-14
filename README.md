@@ -13,6 +13,7 @@ async:false
 
 ### 插件默认参数
 单位：px<br />
+
 			containerWidth: 960,            //容器宽度<br />
 			columnWidth: 280,               //每栏的宽度<br />
 			gap: 30,                        //方格间间隙<br />
