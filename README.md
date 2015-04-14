@@ -17,7 +17,7 @@ async:false
 			containerWidth: 960,            //容器宽度<br />
 			columnWidth: 280,               //每栏的宽度<br />
 			gap: 30,                        //方格间间隙<br />
-			loadMore: function() {}         //加载更多的函数
+			loadMore: function() {}         //加载更多的函数<br />
 
 
 
