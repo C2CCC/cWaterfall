@@ -120,6 +120,7 @@
 				elemNum++;
 			});
 			calLayout(addedElem);
+			$('.cBottomTip').html("下滑加载更多");
 		}
 		$(window).scroll(function() {
 			var documentTop = $(document).scrollTop();
@@ -128,7 +129,6 @@
 			if (documentTop >= (documentHeight - windowHeight)) {
 				$('.cBottomTip').html("加载中...");
 				opts.loadMore();
-				$('.cBottomTip').html("下滑加载更多");
 				loadMoreLayout();
 			}
 		});
