@@ -2,6 +2,7 @@
  *
  * 临时版本，无响应式，带ajax加载,请设置ajax中的async为false,3列
  * chrome貌似有兼容性问题
+ * 感谢Ben Alman的resize插件http://benalman.com/code/projects/jquery-resize/examples/resize/
  * C2CCC
  *
  * */
@@ -50,6 +51,28 @@
 		setTimeout(function() {
 			calLayout(elems);
 		}, 500);
+		//高度改变
+		cW.children().resize(function() {
+			var domE = $(this).get(0); //jQuery对象转换为DOM对象
+			var ro = domE.getBoundingClientRect();
+			var currH = ro.bottom - ro.top;
+			var changedH = currH - $(this).attr("data-h");
+			$(this).attr("data-h", currH); //更新方格高度数据
+			var currL = $(this).position().left;
+			var onChangingE = $(this).nextAll();
+			$.each(onChangingE, function(key, value) {
+				if ($(this).position().left == currL) {
+					$(this).css('top', '+=' + changedH + 'px');
+				}
+			});
+			//重新定义容器高度
+			var c = currL / (opts.columnWidth + opts.gap);
+			columnHeights[c] += changedH;
+			var cH = findMax(columnHeights[0], columnHeights[1], columnHeights[2]);
+			cW.css({
+				'height': cH + opts.gap + 50
+			});
+		});
 		//排序
 		function calLayout(e) {
 			for (i in e) {
@@ -57,6 +80,7 @@
 				var domE = e[i].get(0); //jQuery对象转换为DOM对象
 				var ro = domE.getBoundingClientRect();
 				var eHeight = ro.bottom - ro.top;
+				e[i].attr("data-h", eHeight); //将方格当前高度存入元素的data-h属性中，HTML5特性
 				var currBlkHt = eHeight + opts.gap; //当前布局方格高，包括margin
 				var currLeft = c * (opts.columnWidth + opts.gap);
 				var currTop = columnHeights[c];
@@ -112,7 +136,7 @@
 		}
 
 		//异步加载更多
-		function loadMoreLayout() {
+		function loadMoreLayout(callback) {
 			var addedElem = [];
 			cW.children().eq(elemNum).nextAll().each(function() {
 				addedElem.push($(this));
@@ -120,7 +144,7 @@
 				elemNum++;
 			});
 			calLayout(addedElem);
-			$('.cBottomTip').html("下滑加载更多");
+			callback.callback();
 		}
 		$(window).scroll(function() {
 			var documentTop = $(document).scrollTop();
@@ -129,7 +153,11 @@
 			if (documentTop >= (documentHeight - windowHeight)) {
 				$('.cBottomTip').html("加载中...");
 				opts.loadMore();
-				loadMoreLayout();
+				loadMoreLayout({
+					callback: function() {
+						$('.cBottomTip').html("下滑加载更多");
+					}
+				});
 			}
 		});
 	};
@@ -140,3 +168,79 @@
 		loadMore: function() {}
 	};
 })(jQuery);
+
+//重写resize的插件
+(function($, h, c) {
+	var a = $([]),
+		e = $.resize = $.extend($.resize, {}),
+		i, k = "setTimeout",
+		j = "resize",
+		d = j + "-special-event",
+		b = "delay",
+		f = "throttleWindow";
+	e[b] = 250;
+	e[f] = true;
+	$.event.special[j] = {
+		setup: function() {
+			if (!e[f] && this[k]) {
+				return false
+			}
+			var l = $(this);
+			a = a.add(l);
+			$.data(this, d, {
+				w: l.width(),
+				h: l.height()
+			});
+			if (a.length === 1) {
+				g()
+			}
+		},
+		teardown: function() {
+			if (!e[f] && this[k]) {
+				return false
+			}
+			var l = $(this);
+			a = a.not(l);
+			l.removeData(d);
+			if (!a.length) {
+				clearTimeout(i)
+			}
+		},
+		add: function(l) {
+			if (!e[f] && this[k]) {
+				return false
+			}
+			var n;
+
+			function m(s, o, p) {
+				var q = $(this),
+					r = $.data(this, d);
+				r.w = o !== c ? o : q.width();
+				r.h = p !== c ? p : q.height();
+				n.apply(this, arguments)
+			}
+			if ($.isFunction(l)) {
+				n = l;
+				return m
+			} else {
+				n = l.handler;
+				l.handler = m
+			}
+		}
+	};
+
+	function g() {
+		i = h[k](function() {
+			a.each(function() {
+				var n = $(this),
+					m = n.width(),
+					l = n.height(),
+					o = $.data(this, d);
+				if (m !== o.w || l !== o.h) {
+					n.trigger(j, [o.w = m, o.h = l])
+				}
+			});
+			g()
+		}, e[b])
+	}
+})(jQuery, this);
